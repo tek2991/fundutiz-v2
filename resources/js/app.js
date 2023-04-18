@@ -10,7 +10,7 @@ window.flatpickr = flatpickr;
 Alpine.plugin(focus);
 
 import './../../vendor/power-components/livewire-powergrid/dist/powergrid'
-// import './../../vendor/power-components/livewire-powergrid/dist/powergrid.css'
+import './../../vendor/power-components/livewire-powergrid/dist/powergrid.css'
 
 import './../../node_modules/flatpickr/dist/flatpickr.min.css'
 
