@@ -2,18 +2,17 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
-use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
+use PowerComponents\LivewirePowerGrid\Rules\{RuleActions};
+use PowerComponents\LivewirePowerGrid\Traits\{ActionButton};
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
-use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
+use PowerComponents\LivewirePowerGrid\{Button, Column, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
-final class UserTable extends PowerGridComponent
+final class RoleTable extends PowerGridComponent
 {
     use ActionButton;
-    use WithExport;
 
     /*
     |--------------------------------------------------------------------------
@@ -27,9 +26,6 @@ final class UserTable extends PowerGridComponent
         $this->showCheckBox();
 
         return [
-            Exportable::make('users')
-                ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
             Header::make()->showSearchInput(),
             Footer::make()
                 ->showPerPage()
@@ -48,11 +44,11 @@ final class UserTable extends PowerGridComponent
     /**
      * PowerGrid datasource.
      *
-     * @return Builder<\App\Models\User>
+     * @return Builder<\App\Models\Role>
      */
     public function datasource(): Builder
     {
-        return User::query();
+        return Role::query();
     }
 
     /*
@@ -89,12 +85,9 @@ final class UserTable extends PowerGridComponent
         return PowerGrid::eloquent()
             ->addColumn('id')
             ->addColumn('name')
-
-            /** Example of custom column using a closure **/
-            ->addColumn('name_lower', fn (User $model) => strtolower(e($model->name)))
-
-            ->addColumn('email')
-            ->addColumn('created_at_formatted', fn (User $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('name_lower', fn (Role $model) => strtolower(e($model->name)))
+            ->addColumn('permissions', fn (Role $model) => $model->permissions->pluck('name')->implode(', '))
+            ->addColumn('created_at_formatted', fn (Role $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
     }
 
     /*
@@ -114,18 +107,11 @@ final class UserTable extends PowerGridComponent
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
             Column::make('Name', 'name')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Email', 'email')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Created at', 'created_at_formatted', 'created_at')
+                ->searchable()
                 ->sortable(),
-
+            Column::make('Permissions', 'permissions')
+                ->bodyAttribute('text-justify', 'white-space: normal !important;')
         ];
     }
 
@@ -137,8 +123,6 @@ final class UserTable extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::inputText('name')->operators(['contains']),
-            Filter::inputText('email')->operators(['contains']),
             Filter::datetimepicker('created_at'),
         ];
     }
@@ -152,7 +136,7 @@ final class UserTable extends PowerGridComponent
     */
 
     /**
-     * PowerGrid User Action Buttons.
+     * PowerGrid Role Action Buttons.
      *
      * @return array<int, Button>
      */
@@ -163,11 +147,10 @@ final class UserTable extends PowerGridComponent
         return [
             Button::make('edit', 'Edit')
                 ->class('bg-indigo-500 cursor-pointer text-white px-2.5 py-1 m-1 rounded text-sm')
-                ->route('user.edit', ['user' => 'id'])
+                ->route('role.edit', ['role' => 'id'])
                 ->target(''),
         ];
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -178,7 +161,7 @@ final class UserTable extends PowerGridComponent
     */
 
     /**
-     * PowerGrid User Action Rules.
+     * PowerGrid Role Action Rules.
      *
      * @return array<int, RuleActions>
      */
@@ -190,7 +173,7 @@ final class UserTable extends PowerGridComponent
 
            //Hide button edit for ID 1
             Rule::button('edit')
-                ->when(fn($user) => $user->id === 1)
+                ->when(fn($role) => $role->id === 1)
                 ->hide(),
         ];
     }

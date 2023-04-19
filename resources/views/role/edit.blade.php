@@ -11,8 +11,8 @@
                 <h2 class="text-xl font-regular pt-2 pb-4">Role details</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <x-jet-label for="name" :value="__('Name')" />
-                        <x-jet-input id="name" class="block mt-1 w-full" type="text" disabled
+                        <x-label for="name" :value="__('Name')" />
+                        <x-input id="name" class="block mt-1 w-full" type="text" readonly
                             value="{{ $role->name }}" />
                     </div>
                 </div>

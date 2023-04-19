@@ -13,12 +13,12 @@
                     @csrf
                     <div class="grid grid-cols-1 md:w-1/2 gap-6">
                         <div>
-                            <x-jet-label for="name" :value="__('Name')" />
-                            <x-jet-input id="name" class="block mt-1 w-full" type="text" name="name"
+                            <x-label for="name" :value="__('Name')" />
+                            <x-input id="name" class="block mt-1 w-full" type="text" name="name"
                                 value="{{ old('name') }}" />
                         </div>
                         <div>
-                            <x-jet-label for="permission_ids" :value="__('Permissions')" />
+                            <x-label for="permission_ids" :value="__('Permissions')" />
                             <x-input-select id="permission_ids" name="permission_ids[]" multiple>
                                 @foreach ($permissions as $permission)
                                     <option value="{{ $permission->id }}">{{ $permission->name }}</option>
@@ -27,9 +27,9 @@
                         </div>
                     </div>
                     <div class="flex justify-end mt-4">
-                        <x-jet-button class="ml-4">
+                        <x-button class="ml-4">
                             {{ __('Create') }}
-                        </x-jet-button>
+                        </x-button>
                     </div>
                 </form>
             </div>
