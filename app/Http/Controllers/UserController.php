@@ -106,12 +106,12 @@ class UserController extends Controller
     public function detatchRole(User $user, Role $role)
     {
         // Do not allow users who are not admins to detatch roles
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->hasRole('administrator')) {
             return redirect()->back()->dangerBanner('You do not have permission to do that.');
         }
 
         // Do not allow detatching fixed roles
-        if (in_array($role->name, Role::fixedRoles())) {
+        if ($role->isFixed()) {
             return redirect()->back()->dangerBanner('You cannot detatch a fixed role.');
         }
         $user->roles()->detach($role);
@@ -121,12 +121,12 @@ class UserController extends Controller
     public function attachRole(Request $request, User $user)
     {
         // Do not allow users who are not admins to attach roles
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->hasRole('administrator')) {
             return redirect()->back()->dangerBanner('You do not have permission to do that.');
         }
         $role = Role::find($request->role_id);
         // Do not allow attaching the fixed roles
-        if (in_array($role->name, Role::fixedRoles())) {
+        if ($role->isFixed()) {
             return redirect()->back()->dangerBanner('You cannot attach a fixed role.');
         }
         // Do not allow attaching the same role twice

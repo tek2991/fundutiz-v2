@@ -149,21 +149,16 @@ final class RolesPermissionsTable extends PowerGridComponent
      * @return array<int, Button>
      */
 
-    /*
+
     public function actions(): array
     {
-       return [
-           Button::make('edit', 'Edit')
-               ->class('bg-indigo-500 cursor-pointer text-white px-3 py-2.5 m-1 rounded text-sm')
-               ->route('role.edit', ['role' => 'id']),
-
-           Button::make('destroy', 'Delete')
-               ->class('bg-red-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-               ->route('role.destroy', ['role' => 'id'])
-               ->method('delete')
+        return [
+            Button::make('destroy', 'Remove')
+                ->class('bg-red-500 cursor-pointer text-white px-2.5 py-1.5 m-1 rounded text-sm')
+                ->openModal('confirm-detatch-modal', ['route' => 'role.detatchPermission', 'model_id' => $this->role->id, 'model_name' => 'Role', 'detatching_model_id' => 'id', 'detatching_model_name' => 'Permission', 'action' => 'detatch'])
         ];
     }
-    */
+
 
     /*
     |--------------------------------------------------------------------------

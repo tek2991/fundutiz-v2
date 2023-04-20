@@ -102,12 +102,12 @@ class RoleController extends Controller
     {
 
         // Do not allow users who are not admins to detatch permissions
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->hasRole('administrator')) {
             return redirect()->back()->dangerBanner('You do not have permission to do that.');
         }
 
         // Prevent modification of fixed roles
-        if (in_array($role->name, Role::fixedRoles())) {
+        if ($role->isFixed()) {
             return redirect()->back()->dangerBanner('You cannot modify fixed roles.');
         }
 
@@ -118,12 +118,12 @@ class RoleController extends Controller
     public function attachPermission(Request $request, Role $role)
     {
         // Do not allow users who are not admins to attach roles
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->hasRole('administrator')) {
             return redirect()->back()->dangerBanner('You do not have permission to do that.');
         }
 
         // Prevent modification of fixed roles
-        if (in_array($role->name, Role::fixedRoles())) {
+        if ($role->isFixed()) {
             return redirect()->back()->dangerBanner('You cannot modify fixed roles.');
         }
 
