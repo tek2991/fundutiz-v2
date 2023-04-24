@@ -81,6 +81,13 @@
                 @endif
             @endif
         </div>
+
+        {{-- Assigned Office --}}
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="office" value="{{ __('Office') }}" />
+            <p class="text-xs text-yellow-700">Changes to office can be made from Administrator Dashboard.</p>
+            <x-input id="name" type="text" class="mt-1 block w-full" disabled value="{{ auth()->user()->office ? auth()->user()->office->name : '--'}}" />
+        </div>
     </x-slot>
 
     <x-slot name="actions">
