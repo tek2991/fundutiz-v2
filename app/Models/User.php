@@ -29,6 +29,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'office_id',
     ];
 
     /**
@@ -62,7 +63,7 @@ class User extends Authenticatable
     ];
 
 
-    public function offices()
+    public function office()
     {
         return $this->belongsTo(Office::class);
     }

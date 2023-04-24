@@ -32,14 +32,23 @@
                             </x-input-select>
                         </div>
                         <div>
+                            <x-label for="office_id" :value="__('Office')" />
+                            <x-input-select id="office_id" name="office_id">
+                                <option value="">Select office</option>
+                                @foreach ($offices as $office)
+                                    <option value="{{ $office->id }}">{{ $office->name }}</option>
+                                @endforeach
+                            </x-input-select>
+                        </div>
+                        <div>
                             <x-label for="password" :value="__('Password')" />
                             <x-input id="password" class="block mt-1 w-full" type="password" required name="password"
                                 value="{{ old('password') }}" />
                         </div>
                         <div>
                             <x-label for="password_confirmation" :value="__('Confirm Password')" />
-                            <x-input id="password_confirmation" class="block mt-1 w-full" type="password" required name="password_confirmation"
-                                value="{{ old('password_confirmation') }}" />
+                            <x-input id="password_confirmation" class="block mt-1 w-full" type="password" required
+                                name="password_confirmation" value="{{ old('password_confirmation') }}" />
                         </div>
                     </div>
                     <div class="flex justify-end mt-4">

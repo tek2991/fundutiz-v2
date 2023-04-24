@@ -94,6 +94,8 @@ final class UserTable extends PowerGridComponent
             ->addColumn('name_lower', fn (User $model) => strtolower(e($model->name)))
 
             ->addColumn('email')
+            ->addColumn('office_id')
+            ->addColumn('office_name', fn (User $model) => e($model->office ? $model->office->name : '--'))
             ->addColumn('created_at_formatted', fn (User $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
     }
 
@@ -122,9 +124,9 @@ final class UserTable extends PowerGridComponent
             Column::make('Email', 'email')
                 ->sortable()
                 ->searchable(),
-
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
+            
+            Column::make('Office', 'office_name')
+                ->searchable(),
 
         ];
     }

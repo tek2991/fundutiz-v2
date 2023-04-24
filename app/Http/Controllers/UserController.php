@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Office;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -15,6 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', User::class);
         return view('user.index');
     }
 
@@ -25,8 +27,10 @@ class UserController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', User::class);
+        $offices = Office::all();
         $roles = Role::all();
-        return view('user.create', compact('roles'));
+        return view('user.create', compact('roles', 'offices'));
     }
 
     /**
@@ -41,8 +45,7 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required|confirmed',
-            'phone_1' => 'required',
-            'phone_2' => 'nullable',
+            'office_id' => 'required|exists:offices,id',
             'role_ids.*' => 'required|exists:roles,id',
         ]);
 
@@ -50,8 +53,7 @@ class UserController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
-            'phone_1' => $validated['phone_1'],
-            'phone_2' => $validated['phone_2'],
+            'office_id' => $validated['office_id'],
         ]);
         
         $user->roles()->attach($validated['role_ids']);
@@ -78,7 +80,9 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('user.edit', compact('user'));
+        $this->authorize('update', $user);
+        $offices = Office::all();
+        return view('user.edit', compact('user', 'offices'));
     }
 
     /**
@@ -90,7 +94,12 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate([
+            'office_id' => 'required|exists:offices,id',
+        ]);
+
+        $user->update($validated);
+        return redirect()->route('user.index')->banner('User updated successfully');
     }
 
     /**
