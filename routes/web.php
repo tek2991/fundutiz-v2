@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\FinancialYearController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,5 +43,7 @@ Route::middleware([
     Route::put('role/{role}/attach-permission', [RoleController::class, 'attachPermission'])->name('role.attachPermission');
 
 
-    Route::view('/powergrid', 'powergrid-demo');
+    Route::resource('financialYear', FinancialYearController::class)->only([
+        'index', 'show', 'create', 'store', 'edit', 'update'
+    ]);
 });

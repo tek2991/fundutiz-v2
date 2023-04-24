@@ -8,15 +8,20 @@ class Permission extends \Spatie\Permission\Models\Permission
     public static function defaultPermissions()
     {
         return [
-            'view users',
-            'add users',
-            'edit users',
-            'delete users',
+            'view user',
+            'add user',
+            'edit user',
+            'delete user',
 
-            'view roles',
-            'add roles',
-            'edit roles',
-            'delete roles',
+            'view role',
+            'add role',
+            'edit role',
+            'delete role',
+
+            'view financial year',
+            'add financial year',
+            'edit financial year',
+            'delete financial year',
         ];
     }
 }
