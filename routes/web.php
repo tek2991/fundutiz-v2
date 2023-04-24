@@ -52,6 +52,8 @@ Route::middleware([
     Route::resource('office', OfficeController::class)->only([
         'index', 'create', 'store', 'edit', 'update'
     ]);
+    Route::delete('office/{office}/detatch-fund/{fund}', [OfficeController::class, 'detatchFund'])->name('office.detatchFund');
+    Route::put('office/{office}/attach-fund', [OfficeController::class, 'attachFund'])->name('office.attachFund');
 
     Route::resource('fund', FundController::class)->only([
         'index', 'create', 'store', 'edit', 'update'

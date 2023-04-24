@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Fund;
 use App\Models\User;
 use App\Models\Office;
 use Illuminate\Http\Request;
@@ -53,6 +54,7 @@ class OfficeController extends Controller
      */
     public function edit(Office $office)
     {
+        $this->authorize('update', $office);
         $managers = User::role('manager')->get();
         return view('office.edit', compact('office', 'managers'));
     }
@@ -77,5 +79,27 @@ class OfficeController extends Controller
     public function destroy(Office $office)
     {
         //
+    }
+
+    public function detatchFund(Office $office, Fund $fund)
+    {
+        $this->authorize('update', $office);
+
+        // Detatch fund
+        $office->funds()->detach($fund);
+
+        return redirect()->route('office.edit', $office)->banner('Fund detatched.');
+    }
+
+    public function attachFund(Request $request, Office $office)
+    {
+        $this->authorize('update', $office);
+
+        $fund = Fund::findOrFail($request->fund_id);
+
+        // Sync without detatch
+        $office->funds()->syncWithoutDetaching($fund);
+
+        return redirect()->route('office.edit', $office)->banner('Fund attached.');
     }
 }
