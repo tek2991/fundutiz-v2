@@ -11,12 +11,11 @@ use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
-final class OfficeFundsTable extends PowerGridComponent
+final class FundOfficesTable extends PowerGridComponent
 {
     use ActionButton;
 
-    public string $office_id;
-
+    public string $fund_id;
 
     /*
     |--------------------------------------------------------------------------
@@ -48,13 +47,13 @@ final class OfficeFundsTable extends PowerGridComponent
     /**
      * PowerGrid datasource.
      *
-     * @return Builder<\App\Models\Fund>
+     * @return Builder<\App\Models\Office>
      */
     public function datasource(): Builder
     {
-        $fund_ids = Office::find($this->office_id)->funds->pluck('id')->toArray();
-        return Fund::query()
-            ->whereIn('id', $fund_ids);
+        $office_ids = Fund::find($this->fund_id)->offices->pluck('id')->toArray();
+        return Office::query()
+            ->whereIn('id', $office_ids);
     }
 
     /*
@@ -93,11 +92,11 @@ final class OfficeFundsTable extends PowerGridComponent
             ->addColumn('name')
 
             /** Example of custom column using a closure **/
-            ->addColumn('name_lower', fn (Fund $model) => strtolower(e($model->name)))
+            ->addColumn('name_lower', fn (Office $model) => strtolower(e($model->name)))
 
-            ->addColumn('head_of_account')
-            ->addColumn('description')
-            ->addColumn('created_at_formatted', fn (Fund $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('manager_id')
+            ->addColumn('manager_name', fn (Office $model) => $model->manager->name)
+            ->addColumn('created_at_formatted', fn (Office $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
     }
 
     /*
@@ -121,13 +120,8 @@ final class OfficeFundsTable extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Head of account', 'head_of_account')
-                ->sortable()
-                ->searchable(),
+            Column::make('Manager', 'manager_name'),
 
-            Column::make('Description', 'description')
-                ->searchable()
-                ->bodyAttribute('text-justify', 'white-space: normal !important;'),
         ];
     }
 
@@ -150,7 +144,7 @@ final class OfficeFundsTable extends PowerGridComponent
     */
 
     /**
-     * PowerGrid Fund Action Buttons.
+     * PowerGrid Office Action Buttons.
      *
      * @return array<int, Button>
      */
@@ -161,7 +155,7 @@ final class OfficeFundsTable extends PowerGridComponent
         return [
             Button::make('destroy', 'Remove')
                 ->class('bg-red-500 cursor-pointer text-white px-2.5 py-1.5 m-1 rounded text-sm')
-                ->openModal('confirm-detatch-modal', ['route' => 'office.detatchFund', 'model_id' => $this->office_id, 'model_name' => 'Office', 'detatching_model_id' => 'id', 'detatching_model_name' => 'Fund', 'action' => 'detatch'])
+                ->openModal('confirm-detatch-modal', ['route' => 'fund.detatchOffice', 'model_id' => $this->fund_id, 'model_name' => 'Fund', 'detatching_model_id' => 'id', 'detatching_model_name' => 'Office', 'action' => 'detatch'])
         ];
     }
 
@@ -175,7 +169,7 @@ final class OfficeFundsTable extends PowerGridComponent
     */
 
     /**
-     * PowerGrid Fund Action Rules.
+     * PowerGrid Office Action Rules.
      *
      * @return array<int, RuleActions>
      */
@@ -187,7 +181,7 @@ final class OfficeFundsTable extends PowerGridComponent
 
            //Hide button edit for ID 1
             Rule::button('edit')
-                ->when(fn($fund) => $fund->id === 1)
+                ->when(fn($office) => $office->id === 1)
                 ->hide(),
         ];
     }

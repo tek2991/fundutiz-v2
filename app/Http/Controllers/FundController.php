@@ -60,8 +60,7 @@ class FundController extends Controller
     public function edit(Fund $fund)
     {
         $this->authorize('update', $fund);
-        $offices = Office::all();
-        return view('fund.edit', compact('fund', 'offices'));
+        return view('fund.edit', compact('fund'));
     }
 
     /**
@@ -74,12 +73,10 @@ class FundController extends Controller
             'name' => 'required',
             'head_of_account' => 'required',
             'description' => 'required',
-            'office_ids' => 'required|array',
-            'office_ids.*' => 'nullable|exists:offices,id',
         ]);
-        
+
         $fund->update($request->only('name', 'head_of_account', 'description'));
-        $fund->offices()->sync($request->office_ids);
+
         return redirect()->route('fund.index')->banner('Fund updated successfully.');
     }
 
@@ -89,5 +86,27 @@ class FundController extends Controller
     public function destroy(Fund $fund)
     {
         //
+    }
+
+    public function detatchOffice(Fund $fund, Office $office)
+    {
+        $this->authorize('update', $fund);
+
+        // Detatch office
+        $fund->offices()->detach($office);
+
+        return redirect()->route('fund.edit', $fund)->banner('Office detatched.');
+    }
+
+    public function attachOffice(Request $request, Fund $fund)
+    {
+        $this->authorize('update', $fund);
+
+        $office = Office::findOrFail($request->office_id);
+
+        // Sync without detatch
+        $fund->offices()->syncWithoutDetaching($office);
+
+        return redirect()->route('fund.edit', $fund)->banner('Office attached.');
     }
 }
