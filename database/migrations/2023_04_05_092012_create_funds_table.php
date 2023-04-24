@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('funds', function (Blueprint $table) {
             $table->id();
-            $table->string('hoa');
             $table->string('name');
+            $table->string('head_of_account');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

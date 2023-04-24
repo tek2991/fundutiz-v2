@@ -9,6 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4">
                 <h2 class="text-xl font-regular pt-2 pb-4">User details</h2>
+                <x-validation-errors class="mb-4" />
                 <form action="{{ route('user.store') }}" method="post">
                     @csrf
                     <div class="grid grid-cols-1 md:w-1/2 gap-6">
@@ -21,17 +22,6 @@
                             <x-label for="email" :value="__('Email')" />
                             <x-input id="email" class="block mt-1 w-full" type="email" required name="email"
                                 value="{{ old('email') }}" />
-                        </div>
-
-                        <div>
-                            <x-label for="phone" :value="__('Phone')" />
-                            <x-input id="phone" class="block mt-1 w-full" type="text" name="phone_1"
-                                value="{{ old('phone_1') }}" required />
-                        </div>
-                        <div>
-                            <x-label for="phone_2" :value="__('Phone (Alternate)')" />
-                            <x-input id="phone_2" class="block mt-1 w-full" type="text" name="phone_2"
-                                value="{{ old('phone_2') }}" />
                         </div>
                         <div>
                             <x-label for="role_ids" :value="__('Roles')" />

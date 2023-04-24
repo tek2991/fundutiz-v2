@@ -53,6 +53,7 @@ class UserController extends Controller
             'phone_1' => $validated['phone_1'],
             'phone_2' => $validated['phone_2'],
         ]);
+        
         $user->roles()->attach($validated['role_ids']);
 
         return redirect()->route('user.index')->banner('User created successfully');

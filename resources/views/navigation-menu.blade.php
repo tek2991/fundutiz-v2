@@ -34,6 +34,14 @@
                             <x-nav-dropdown-item :href="route('financialYear.index')" :active="request()->routeIs('financialYear.*')">
                                 {{ __('Financial Years') }}
                             </x-nav-dropdown-item>
+                            {{-- Offices --}}
+                            <x-nav-dropdown-item :href="route('office.index')" :active="request()->routeIs('office.*')">
+                                {{ __('Offices') }}
+                            </x-nav-dropdown-item>
+                            {{-- Funds --}}
+                            <x-nav-dropdown-item :href="route('fund.index')" :active="request()->routeIs('fund.*')">
+                                {{ __('Funds') }}
+                            </x-nav-dropdown-item>
                         </x-nav-dropdown-wrapper>
                     @endhasrole
                 </div>

@@ -60,4 +60,15 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+
+    public function offices()
+    {
+        return $this->belongsTo(Office::class);
+    }
+
+    public function managerOfOffices()
+    {
+        return $this->hasMany(Office::class, 'manager_id');
+    }
 }

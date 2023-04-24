@@ -22,6 +22,16 @@ class Permission extends \Spatie\Permission\Models\Permission
             'add financial year',
             'edit financial year',
             'delete financial year',
+
+            'view fund',
+            'add fund',
+            'edit fund',
+            'delete fund',
+
+            'view office',
+            'add office',
+            'edit office',
+            'delete office',
         ];
     }
 }

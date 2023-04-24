@@ -9,6 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4">
                 <h2 class="text-xl font-regular pt-2 pb-4">Financial Year details</h2>
+                <x-validation-errors class="mb-4" />
                 <form action="{{ route('financialYear.store') }}" method="post">
                     @csrf
                     <div class="grid grid-cols-1 md:w-1/2 gap-6">
@@ -29,13 +30,15 @@
                         </div>
                         <div>
                             <x-label for="is_active" :value="__('Set as current')" />
-                            <x-checkbox id="is_active" class="block mt-1" required name="is_active" value="1" checked="{{ old('is_active') == '1' }}" />
+                            <x-checkbox id="is_active" class="block mt-1" required name="is_active" value="1"
+                                checked="{{ old('is_active') == '1' }}" />
                         </div>
-                        <div class="flex justify-end mt-4">
-                            <x-button class="ml-4">
-                                {{ __('Save') }}
-                            </x-button>
-                        </div>
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <x-button class="ml-4">
+                            {{ __('Save') }}
+                        </x-button>
+                    </div>
                 </form>
             </div>
         </div>

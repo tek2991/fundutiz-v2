@@ -9,6 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-4">
                 <h2 class="text-xl font-regular pt-2 pb-4">Financial Year details</h2>
+                <x-validation-errors class="mb-4" />
                 <form action="{{ route('financialYear.update', $financialYear) }}" method="post">
                     @csrf
                     @method('PUT')
@@ -33,11 +34,11 @@
                             <x-checkbox id="is_active" class="block mt-1" required name="is_active" value="1"
                                 checked="{{ $financialYear->is_active }}" />
                         </div>
-                        <div class="flex justify-end mt-4">
-                            <x-button class="ml-4">
-                                {{ __('Save') }}
-                            </x-button>
-                        </div>
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <x-button class="ml-4">
+                            {{ __('Save') }}
+                        </x-button>
                     </div>
                 </form>
             </div>

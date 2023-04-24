@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FundController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\FinancialYearController;
 
 /*
@@ -44,6 +46,14 @@ Route::middleware([
 
 
     Route::resource('financialYear', FinancialYearController::class)->only([
-        'index', 'show', 'create', 'store', 'edit', 'update'
+        'index', 'create', 'store', 'edit', 'update'
+    ]);
+
+    Route::resource('office', OfficeController::class)->only([
+        'index', 'create', 'store', 'edit', 'update'
+    ]);
+
+    Route::resource('fund', FundController::class)->only([
+        'index', 'create', 'store', 'edit', 'update'
     ]);
 });
