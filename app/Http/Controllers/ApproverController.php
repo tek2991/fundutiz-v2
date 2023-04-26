@@ -21,7 +21,8 @@ class ApproverController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', Approver::class);
+        return view('approver.create');
     }
 
     /**
@@ -29,7 +30,13 @@ class ApproverController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', Approver::class);
+        $validated = $request->validate([
+            'name' => 'required',
+        ]);
+
+        Approver::create($validated);
+        return redirect()->route('approver.index')->banner('Approver created successfully');
     }
 
     /**
@@ -45,7 +52,8 @@ class ApproverController extends Controller
      */
     public function edit(Approver $approver)
     {
-        //
+        $this->authorize('update', $approver);
+        return view('approver.edit', compact('approver'));
     }
 
     /**
@@ -53,7 +61,13 @@ class ApproverController extends Controller
      */
     public function update(Request $request, Approver $approver)
     {
-        //
+        $this->authorize('update', $approver);
+        $validated = $request->validate([
+            'name' => 'required',
+        ]);
+
+        $approver->update($validated);
+        return redirect()->route('approver.index')->banner('Approver updated successfully');
     }
 
     /**

@@ -90,7 +90,7 @@ final class ApproverTable extends PowerGridComponent
             ->addColumn('id')
             ->addColumn('name')
 
-           /** Example of custom column using a closure **/
+            /** Example of custom column using a closure **/
             ->addColumn('name_lower', fn (Approver $model) => strtolower(e($model->name)))
 
             ->addColumn('created_at_formatted', fn (Approver $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
@@ -105,22 +105,17 @@ final class ApproverTable extends PowerGridComponent
     |
     */
 
-     /**
-      * PowerGrid Columns.
-      *
-      * @return array<int, Column>
-      */
+    /**
+     * PowerGrid Columns.
+     *
+     * @return array<int, Column>
+     */
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
             Column::make('Name', 'name')
                 ->sortable()
                 ->searchable(),
-
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
-
         ];
     }
 
@@ -151,25 +146,17 @@ final class ApproverTable extends PowerGridComponent
      * @return array<int, Button>
      */
 
-    /*
+
     public function actions(): array
     {
-       return [
-           Button::make('edit', 'Edit')
-               ->class('bg-indigo-500 cursor-pointer text-white px-3 py-2.5 m-1 rounded text-sm')
-               ->route('approver.edit', function(\App\Models\Approver $model) {
-                    return $model->id;
-               }),
-
-           Button::make('destroy', 'Delete')
-               ->class('bg-red-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-               ->route('approver.destroy', function(\App\Models\Approver $model) {
-                    return $model->id;
-               })
-               ->method('delete')
+        return [
+            Button::make('edit', 'Edit')
+                ->class('bg-indigo-500 cursor-pointer text-white px-2.5 py-1 m-1 rounded text-sm')
+                ->route('approver.edit', ['approver' => 'id'])
+                ->target(''),
         ];
     }
-    */
+
 
     /*
     |--------------------------------------------------------------------------

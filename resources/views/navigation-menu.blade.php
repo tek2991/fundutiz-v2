@@ -42,6 +42,10 @@
                             <x-nav-dropdown-item :href="route('fund.index')" :active="request()->routeIs('fund.*')">
                                 {{ __('Funds') }}
                             </x-nav-dropdown-item>
+                            {{-- Approvers --}}
+                            <x-nav-dropdown-item :href="route('approver.index')" :active="request()->routeIs('approver.*')">
+                                {{ __('Approvers') }}
+                            </x-nav-dropdown-item>
                         </x-nav-dropdown-wrapper>
                     @endhasrole
                 </div>
