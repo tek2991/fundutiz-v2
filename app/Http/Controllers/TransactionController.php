@@ -7,12 +7,18 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
+    public function allTransactions()
+    {
+        $this->authorize('viewAny', Transaction::class);
+        return view('transaction.allTransactions');
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $this->authorize('viewAny', Transaction::class);
+        return view('transaction.index');
     }
 
     /**
@@ -20,7 +26,8 @@ class TransactionController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', Transaction::class);
+        return view('transaction.create');
     }
 
     /**

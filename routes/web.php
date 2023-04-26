@@ -6,6 +6,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ApproverController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\FinancialYearController;
 
 /*
@@ -63,6 +64,11 @@ Route::middleware([
     Route::put('fund/{fund}/attach-office', [FundController::class, 'attachOffice'])->name('fund.attachOffice');
 
     Route::resource('approver', ApproverController::class)->only([
+        'index', 'create', 'store', 'edit', 'update'
+    ]);
+
+    Route::get('all-transactions', [TransactionController::class, 'allTransactions'])->name('allTransactions');
+    Route::resource('transaction', TransactionController::class)->only([
         'index', 'create', 'store', 'edit', 'update'
     ]);
 });
