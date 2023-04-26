@@ -88,6 +88,16 @@
             <p class="text-xs text-yellow-700">Changes to office can be made from Administrator Dashboard.</p>
             <x-input id="name" type="text" class="mt-1 block w-full" disabled value="{{ auth()->user()->office ? auth()->user()->office->name : '--'}}" />
         </div>
+        {{-- Assigned Roles --}}
+        <div class="col-span-6 sm:col-span-4">
+            <x-label for="roles" value="{{ __('Assigned Roles') }}" />
+            <p class="text-xs text-yellow-700">Changes to roles can be made from Administrator Dashboard.</p>
+            <ul class="list-disc pl-5">
+                @foreach (auth()->user()->roles as $role)
+                    <li class="text-sm text-gray-600">{{ $role->name }}</li>
+                @endforeach
+            </ul>
+        </div>
     </x-slot>
 
     <x-slot name="actions">

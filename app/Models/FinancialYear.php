@@ -33,4 +33,9 @@ class FinancialYear extends Model
         // return $this->is_active;
         return false;
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

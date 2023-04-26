@@ -72,4 +72,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Office::class, 'manager_id');
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

@@ -25,4 +25,9 @@ class Office extends Model
     {
         return $this->belongsToMany(Fund::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

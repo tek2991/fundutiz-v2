@@ -5,6 +5,7 @@ use App\Http\Controllers\FundController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\ApproverController;
 use App\Http\Controllers\FinancialYearController;
 
 /*
@@ -60,4 +61,8 @@ Route::middleware([
     ]);
     Route::delete('fund/{fund}/detatch-office/{office}', [FundController::class, 'detatchOffice'])->name('fund.detatchOffice');
     Route::put('fund/{fund}/attach-office', [FundController::class, 'attachOffice'])->name('fund.attachOffice');
+
+    Route::resource('approver', ApproverController::class)->only([
+        'index', 'create', 'store', 'edit', 'update'
+    ]);
 });

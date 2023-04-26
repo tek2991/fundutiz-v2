@@ -32,6 +32,16 @@ class Permission extends \Spatie\Permission\Models\Permission
             'add office',
             'edit office',
             'delete office',
+
+            'view approver',
+            'add approver',
+            'edit approver',
+            'delete approver',
+
+            'view transaction',
+            'add transaction',
+            'edit transaction',
+            'delete transaction',
         ];
     }
 }

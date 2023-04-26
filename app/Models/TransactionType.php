@@ -4,19 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Fund extends Model
+class TransactionType extends Model
 {
     protected $fillable = [
         'name',
-        'head_of_account',
-        'description',
     ];
 
-    public function offices()
+    public static function defaultvalues()
     {
-        return $this->belongsToMany(Office::class);
+        return [
+            'Credit',
+            'Debit',
+        ];
     }
 
+    /**
+     * Get the transactions for the transaction type.
+     */
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
