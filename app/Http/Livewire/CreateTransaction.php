@@ -42,7 +42,10 @@ class CreateTransaction extends Component
     public $notGemRemarks; // Required for Debit if empty gemContractNumber and gemNonAvailabilityCertificateNumber
 
     // Confirm deficit transaction
-    public $confirmDeficitTransaction = 0; // Default: No
+    public $confirmDeficitTransaction = false;
+
+    // Confirm transaction
+    public $confirmTransaction = false;
 
     public function mount()
     {

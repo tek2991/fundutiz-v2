@@ -152,13 +152,23 @@
                                     <x-checkbox id="confirm_deficit_transaction" class="block mr-3 bg-blue-100"
                                         type="text" name="confirm_deficit_transaction"
                                         wire:model="confirmDeficitTransaction" />
-                                    <p class="text-sm text-blue-600 pt-1">
+                                    <p class="text-sm text-orange-600 pt-1">
                                         I confirm that the transaction will result in a deficit.
                                     </p>
                                 </div>
                             </div>
                         @endif
                     @endif
+                    {{-- Confirm transaction --}}
+                    <div class="md:col-span-2 md:col-start-1">
+                        <div class=" inline-flex items-center">
+                            <x-checkbox id="confirm_transaction" class="block mr-3 bg-blue-100" type="text"
+                                name="confirm_transaction" wire:model="confirmTransaction" />
+                            <p class="text-sm text-blue-600 pt-1">
+                                I confirm that the transaction is correct.
+                            </p>
+                        </div>
+                    </div>
                 </div>
                 <div class="flex justify-end mt-4">
                     <x-button class="ml-4">
