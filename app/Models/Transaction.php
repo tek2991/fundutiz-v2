@@ -23,6 +23,7 @@ class Transaction extends Model
         'gem_non_availability_certificate_number',
         'not_gem_remarks',
         'created_by',
+        'is_deficit',
     ];
 
     /**
@@ -33,6 +34,8 @@ class Transaction extends Model
     protected $casts = [
         'approved_at' => 'datetime',
         'amount' => 'integer',
+        'incurred' => 'boolean',
+        'is_deficit' => 'boolean',
     ];
 
     /**

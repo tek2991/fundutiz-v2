@@ -40,12 +40,10 @@ class CreateTransaction extends Component
     public $gemContractNumber; // Required for Debit
     public $gemNonAvailabilityCertificateNumber; // Optional for Debit if empty gemContractNumber
     public $notGemRemarks; // Required for Debit if empty gemContractNumber and gemNonAvailabilityCertificateNumber
-
-    // Confirm deficit transaction
-    public $confirmDeficitTransaction = false;
-
+    public $confirmDeficitTransaction = false; // Required for Debit if balanceAfterTransaction < 0
+    
     // Confirm transaction
-    public $confirmTransaction = false;
+    public $confirmTransaction = false; // Required to submit the form
 
     public function mount()
     {
@@ -68,7 +66,6 @@ class CreateTransaction extends Component
     public function updatedTransactionTypeId($value)
     {
         $this->transactionTypeId = $value;
-
         $this->showDebitFields = $this->transactionTypeId == $this->transactionTypes->where('name', 'Debit')->first()->id;
     }
 

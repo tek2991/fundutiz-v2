@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('gem_non_availability_certificate_number')->nullable();
             $table->string('not_gem_remarks')->nullable();
             $table->foreignId('created_by')->constrained('users');
+            $table->boolean('is_deficit')->default(false);
             $table->timestamps();
         });
     }

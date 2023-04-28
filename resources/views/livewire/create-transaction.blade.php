@@ -82,7 +82,7 @@
                     <div class="md:col-start-1">
                         <x-label for="approved_at" :value="__('Approved at')" />
                         <x-input id="approved_at" class="block mt-1 w-full" type="date" name="approved_at"
-                            wire:model="approvedAt" required />
+                            wire:model="approved_at" required />
                     </div>
                     @if ($showDebitFields)
                         <div class="md:col-span-3">
@@ -151,7 +151,7 @@
                                 <div class=" inline-flex items-center">
                                     <x-checkbox id="confirm_deficit_transaction" class="block mr-3 bg-blue-100"
                                         type="text" name="confirm_deficit_transaction"
-                                        wire:model="confirmDeficitTransaction" />
+                                        wire:model="confirmDeficitTransaction" required />
                                     <p class="text-sm text-orange-600 pt-1">
                                         I confirm that the transaction will result in a deficit.
                                     </p>
@@ -163,7 +163,7 @@
                     <div class="md:col-span-2 md:col-start-1">
                         <div class=" inline-flex items-center">
                             <x-checkbox id="confirm_transaction" class="block mr-3 bg-blue-100" type="text"
-                                name="confirm_transaction" wire:model="confirmTransaction" />
+                                name="confirm_transaction" wire:model="confirmTransaction" required />
                             <p class="text-sm text-blue-600 pt-1">
                                 I confirm that the transaction is correct.
                             </p>
