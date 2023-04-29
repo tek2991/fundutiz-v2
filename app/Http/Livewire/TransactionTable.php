@@ -2,13 +2,17 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Fund;
+use App\Models\User;
+use App\Models\Office;
 use App\Models\Transaction;
-use App\Models\TransactionType;
+use App\Models\FinancialYear;
 use Illuminate\Support\Carbon;
+use App\Models\TransactionType;
 use Illuminate\Database\Eloquent\Builder;
+use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
-use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\{Button, Column, Detail, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
 final class TransactionTable extends PowerGridComponent
@@ -194,14 +198,16 @@ final class TransactionTable extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
-            
+
             // Columns only for excel
+            Column::make('Created at', 'created_at_formatted', 'created_at')
+                ->hidden()
+                ->visibleInExport(true),
+
             Column::make('Approver', 'approver_name', 'approver_id')
                 ->hidden()
                 ->visibleInExport(true),
-            
+
             Column::make('Approved at', 'approved_at_formatted', 'approved_at')
                 ->hidden()
                 ->visibleInExport(true),
@@ -245,6 +251,26 @@ final class TransactionTable extends PowerGridComponent
     {
         return [
             Filter::datetimepicker('created_at'),
+            Filter::select('office_id', 'office_id')
+                ->dataSource(Office::all())
+                ->optionValue('id')
+                ->optionLabel('name'),
+            Filter::select('fund_id', 'fund_id')
+                ->dataSource(Fund::all())
+                ->optionValue('id')
+                ->optionLabel('name'),
+            Filter::select('financial_year_id', 'financial_year_id')
+                ->dataSource(FinancialYear::all())
+                ->optionValue('id')
+                ->optionLabel('name'),
+            Filter::select('transaction_type_id', 'transaction_type_id')
+                ->dataSource(TransactionType::all())
+                ->optionValue('id')
+                ->optionLabel('name'),
+            Filter::select('created_by', 'created_by')
+                ->dataSource(User::all())
+                ->optionValue('id')
+                ->optionLabel('name'),
         ];
     }
 

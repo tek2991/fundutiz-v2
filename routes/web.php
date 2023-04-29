@@ -71,4 +71,6 @@ Route::middleware([
     Route::resource('transaction', TransactionController::class)->only([
         'index', 'create', 'store', 'edit', 'update'
     ]);
+
+    // Route::view('/powergrid', 'powergrid-demo');
 });

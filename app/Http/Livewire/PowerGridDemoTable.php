@@ -18,8 +18,7 @@ use Faker\Factory as FakerFactory;
 use Illuminate\Support\{Carbon, Collection};
 use PowerComponents\LivewirePowerGrid\Rules\Rule;
 use PowerComponents\LivewirePowerGrid\Traits\ActionButton;
-use PowerComponents\LivewirePowerGrid\{
-    Button,
+use PowerComponents\LivewirePowerGrid\{Button,
     Column,
     Exportable,
     Filters\Filter,
@@ -28,8 +27,7 @@ use PowerComponents\LivewirePowerGrid\{
     PowerGrid,
     PowerGridComponent,
     PowerGridEloquent,
-    Rules\RuleActions
-};
+    Rules\RuleActions};
 
 final class PowerGridDemoTable extends PowerGridComponent
 {
@@ -56,8 +54,7 @@ final class PowerGridDemoTable extends PowerGridComponent
             [
                 'rowActionEvent',
                 'bulkActionEvent',
-            ]
-        );
+            ]);
     }
 
     /*
@@ -116,9 +113,9 @@ final class PowerGridDemoTable extends PowerGridComponent
     */
 
     /**
-     * PowerGrid datasource.
-     *
-     */
+    * PowerGrid datasource.
+    *
+    */
     public function datasource()
     {
         return $this->demoUsers(); //Get demo users. Should be removed in a real project.
@@ -185,7 +182,7 @@ final class PowerGridDemoTable extends PowerGridComponent
     |
 
     */
-    /**
+     /**
      * PowerGrid Header
      *
      * @return array<int, Button>
@@ -233,7 +230,6 @@ final class PowerGridDemoTable extends PowerGridComponent
 
             Column::make('Laravel user since', 'laravel_since_formatted')
                 ->sortable()
-
         ];
     }
 
@@ -245,7 +241,7 @@ final class PowerGridDemoTable extends PowerGridComponent
     |
     */
 
-    /**
+     /**
      * PowerGrid action buttons.
      *
      * @return array<int, Button>
@@ -253,10 +249,10 @@ final class PowerGridDemoTable extends PowerGridComponent
 
     public function actions(): array
     {
-        return [
-            Button::make('info', 'Click me')
-                ->class('bg-indigo-500 hover:bg-indigo-600 cursor-pointer text-white px-3 py-2 text-sm rounded-md')
-                ->emit('rowActionEvent', ['id' => 'id']),
+       return [
+           Button::make('info', 'Click me')
+               ->class('bg-indigo-500 hover:bg-indigo-600 cursor-pointer text-white px-3 py-2 text-sm rounded-md')
+               ->emit('rowActionEvent', ['id' => 'id']),
         ];
     }
 
@@ -269,32 +265,32 @@ final class PowerGridDemoTable extends PowerGridComponent
     */
 
     /**
-     * PowerGrid action rules.
-     *
-     * @return array<int, RuleActions>
-     */
+    * PowerGrid action rules.
+    *
+    * @return array<int, RuleActions>
+    */
     public function actionRules(): array
     {
         return [
             //Hide "info" button for row with user ID 1
             Rule::button('info')
-                ->when(fn ($user) => $user->id === 1)
+                ->when(fn($user) => $user->id === 1)
                 ->hide(),
 
             //Disable "info" button for row with user ID 2
             Rule::button('info')
-                ->when(fn ($user) => $user->id === 2)
+                ->when(fn($user) => $user->id === 2)
                 ->caption('Click me (disabled)')
                 ->disable(),
 
             //Change "info" button caption for row with user ID 3
             Rule::button('info')
-                ->when(fn ($user) => $user->id === 3)
+                ->when(fn($user) => $user->id === 3)
                 ->caption('Click me! 🤠'),
 
             //Change "background" for row with user ID 4
             Rule::rows()
-                ->when(fn ($user) => $user->id === 4)
+                ->when(fn($user) => $user->id === 4)
                 ->setAttribute('class', 'bg-pg-secondary-200 hover:bg-pg-secondary-300'),
         ];
     }
@@ -326,8 +322,6 @@ final class PowerGridDemoTable extends PowerGridComponent
 
             Filter::boolean('laracon')
                 ->label('Yes', 'No'),
-
-            Filter::datetimepicker('laravel_since_formatted')
         ];
     }
 
@@ -349,7 +343,7 @@ final class PowerGridDemoTable extends PowerGridComponent
 
         $users = collect();
 
-        for ($i = 1; $i <= 20; $i++) {
+        for ($i=1; $i <= 20; $i++) {
             $user = new User([
                 'name' => $faker->name(),
                 'email' => $faker->unique()->safeEmail(),
