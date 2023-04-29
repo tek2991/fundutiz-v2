@@ -10,6 +10,9 @@ class TransactionType extends Model
         'name',
     ];
 
+    const CREDIT = 1;
+    const DEBIT = 2;
+
     public static function defaultvalues()
     {
         return [

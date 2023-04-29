@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\Approver;
 use App\Models\FinancialYear;
 use App\Models\TransactionType;
+use Illuminate\Validation\Rule;
 
 class CreateTransaction extends Component
 {
@@ -37,7 +38,7 @@ class CreateTransaction extends Component
     public $amount;
     public $fileNumber;
     public $approved_at;
-    public $approverId; // Required for Debit
+    public $approverId;
     public $incurred = 1; // Required for Debit // Default: Yes
     public $item; // Required for Debit
     public $vendorName; // Required for Debit
@@ -115,13 +116,27 @@ class CreateTransaction extends Component
             'amount' => 'required|numeric|min:1',
             'fileNumber' => 'required|string',
             'approved_at' => 'required|date',
-            'approverId' => 'nullable|required_if:transactionTypeId,' . $this->debitTypeId . '|exists:approvers,id',
+            'approverId' => 'required|exists:approvers,id',
             'incurred' => 'nullable|required_if:transactionTypeId,' . $this->debitTypeId . '|boolean',
             'item' => 'nullable|required_if:transactionTypeId,' . $this->debitTypeId . '|string',
             'vendorName' => 'nullable|required_if:transactionTypeId,' . $this->debitTypeId . '|string',
-            'gemContractNumber' => 'nullable|required_if:transactionTypeId,' . $this->debitTypeId . '|string',
-            'gemNonAvailabilityCertificateNumber' => 'nullable|required_if:transactionTypeId,' . $this->debitTypeId . '|string',
-            'notGemRemarks' => 'nullable|required_if:transactionTypeId,' . $this->debitTypeId . '|string',
+            'gemContractNumber' => [
+                'nullable',
+                'string',
+                // Required if transaction type is debit and gemNonAvailabilityCertificateNumber is empty and notGemRemarks is empty
+                Rule::requiredIf(function () {
+                    return $this->transactionTypeId == $this->debitTypeId && empty($this->gemNonAvailabilityCertificateNumber) && empty($this->notGemRemarks);
+                }),
+            ],
+            'gemNonAvailabilityCertificateNumber' => 'nullable',
+            'notGemRemarks' => [
+                'nullable',
+                'string',
+                // Required if transaction type is debit and if gemContractNumber is empty and gemNonAvailabilityCertificateNumber is empty
+                Rule::requiredIf(function () {
+                    return $this->transactionTypeId == $this->debitTypeId && empty($this->gemContractNumber) && empty($this->gemNonAvailabilityCertificateNumber);
+                }),
+            ],
             'confirmDeficitTransaction' => 'nullable|required_if:balanceAfterTransaction,<,0|boolean',
             'confirmTransaction' => 'required|boolean',
         ];
@@ -141,17 +156,21 @@ class CreateTransaction extends Component
             'amount' => $this->amount,
             'file_number' => $this->fileNumber,
             'approved_at' => $this->approved_at,
-            'approver_id' => $this->transactionTypeId == $this->debitTypeId ? $this->approverId : null,
+            'approver_id' => $this->approverId,
             'incurred' => $this->transactionTypeId == $this->debitTypeId ? $this->incurred : null,
             'item' => $this->transactionTypeId == $this->debitTypeId ? $this->item : null,
             'vendor_name' => $this->transactionTypeId == $this->debitTypeId ? $this->vendorName : null,
             'gem_contract_number' => $this->transactionTypeId == $this->debitTypeId ? $this->gemContractNumber : null,
             'gem_non_availability_certificate_number' => $this->transactionTypeId == $this->debitTypeId ? $this->gemNonAvailabilityCertificateNumber : null,
             'not_gem_remarks' => $this->transactionTypeId == $this->debitTypeId ? $this->notGemRemarks : null,
+            'is_deficit' => $this->transactionTypeId == $this->debitTypeId ? $this->confirmDeficitTransaction : null,
         ]);
 
+        // Flash success message
+        session()->flash('flash.banner', 'Transaction created successfully.');
+
         // Redirect to the transaction show page
-        return redirect()->route('transactions.show', $transaction)->banner('Transaction recordeed successfully!');
+        return redirect()->route('transaction.index');
     }
 
     public function render()

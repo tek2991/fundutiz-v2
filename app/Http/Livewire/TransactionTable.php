@@ -3,17 +3,34 @@
 namespace App\Http\Livewire;
 
 use App\Models\Transaction;
+use App\Models\TransactionType;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PowerComponents\LivewirePowerGrid\Rules\{Rule, RuleActions};
 use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
-use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
+use PowerComponents\LivewirePowerGrid\{Button, Column, Detail, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
 final class TransactionTable extends PowerGridComponent
 {
     use ActionButton;
     use WithExport;
+
+    public string $debitIcon = "
+        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-6 w-6 ml-1 text-red-500\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">
+            <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M15 12a3 3 0 11-6 0 3 3 0 016 0z\"/>
+            <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 19a2 2 0 01-2 2H7a2 2 0 01-2-2V7c0-1.1.9-2 2-2h10a2 2 0 012 2v12z\"/>
+        </svg>
+    ";
+
+    public string $creditIcon = "
+        <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-6 w-6 ml-1 text-green-500\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">
+            <path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 6v6m0 0v6m0-6h6m-6 0H6\"/>
+        </svg>
+    ";
+
+    public $debitTypeId = TransactionType::DEBIT;
+    public $creditTypeId = TransactionType::CREDIT;
 
     /*
     |--------------------------------------------------------------------------
@@ -34,6 +51,9 @@ final class TransactionTable extends PowerGridComponent
             Footer::make()
                 ->showPerPage()
                 ->showRecordCount(),
+            Detail::make()
+                ->view('components.transaction-detail')
+                ->showCollapseIcon(),
         ];
     }
 
@@ -52,7 +72,8 @@ final class TransactionTable extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Transaction::query();
+        return Transaction::query()
+            ->with(['transactionType', 'financialYear', 'office', 'fund', 'approver', 'createdBy']);
     }
 
     /*
@@ -89,25 +110,33 @@ final class TransactionTable extends PowerGridComponent
         return PowerGrid::eloquent()
             ->addColumn('id')
             ->addColumn('transaction_type_id')
+            ->addColumn('transaction_type_name', fn (Transaction $model) => $model->transactionType->name)
+            ->addColumn('transaction_type_formatted', fn (Transaction $model) => "<span class='inline-flex justify-between'>" . $model->transactionType->name . ($model->transaction_type_id == $this->debitTypeId ? $this->debitIcon : $this->creditIcon) . "</span>")
             ->addColumn('financial_year_id')
+            ->addColumn('financial_year_name', fn (Transaction $model) => $model->financialYear->name)
             ->addColumn('office_id')
+            ->addColumn('office_name', fn (Transaction $model) => $model->office->name)
             ->addColumn('fund_id')
+            ->addColumn('fund_name', fn (Transaction $model) => $model->fund->name)
+            ->addColumn('hoa', fn (Transaction $model) => $model->fund->head_of_account)
             ->addColumn('file_number')
-
-           /** Example of custom column using a closure **/
-            ->addColumn('file_number_lower', fn (Transaction $model) => strtolower(e($model->file_number)))
-
             ->addColumn('amount_in_cents')
+            ->addColumn('amount_formatted', fn (Transaction $model) => "₹" . number_format($model->amount_in_cents / 100, 2, '.', ','))
             ->addColumn('approver_id')
-            ->addColumn('approved_at_formatted', fn (Transaction $model) => Carbon::parse($model->approved_at)->format('d/m/Y H:i:s'))
+            ->addColumn('approver_name', fn (Transaction $model) => $model->approver->name)
+            ->addColumn('approved_at_formatted', fn (Transaction $model) => Carbon::parse($model->approved_at)->format('d/m/Y'))
             ->addColumn('incurred')
+            ->addColumn('incurred_formatted', fn (Transaction $model) => $model->incurred ? 'Yes' : 'No')
             ->addColumn('item')
             ->addColumn('vendor_name')
             ->addColumn('gem_contract_number')
             ->addColumn('gem_non_availability_certificate_number')
             ->addColumn('not_gem_remarks')
             ->addColumn('created_by')
-            ->addColumn('created_at_formatted', fn (Transaction $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
+            ->addColumn('created_by_name', fn (Transaction $model) => $model->createdBy->name)
+            ->addColumn('created_at_formatted', fn (Transaction $model) => Carbon::parse($model->created_at)->format('d/m/Y'))
+            ->addColumn('is_deficit')
+            ->addColumn('is_deficit_formatted', fn (Transaction $model) => $model->is_deficit ? 'Yes' : 'No');
     }
 
     /*
@@ -119,55 +148,91 @@ final class TransactionTable extends PowerGridComponent
     |
     */
 
-     /**
-      * PowerGrid Columns.
-      *
-      * @return array<int, Column>
-      */
+    /**
+     * PowerGrid Columns.
+     *
+     * @return array<int, Column>
+     */
     public function columns(): array
     {
         return [
-            Column::make('Id', 'id'),
-            Column::make('Transaction type id', 'transaction_type_id'),
-            Column::make('Financial year id', 'financial_year_id'),
-            Column::make('Office id', 'office_id'),
-            Column::make('Fund id', 'fund_id'),
+            Column::make('Type', 'transaction_type_formatted', 'transaction_type_id')
+                ->sortable()
+                ->searchable()
+                ->visibleInExport(false),
+            // Excel alternative
+            Column::make('Type', 'transaction_type_name', 'transaction_type_id')
+                ->hidden()
+                ->visibleInExport(true),
+
+            Column::make('Financial year', 'financial_year_name', 'financial_year_id')
+                ->sortable()
+                ->searchable(),
+
+            Column::make('Office', 'office_name', 'office_id')
+                ->sortable()
+                ->searchable(),
+
+            Column::make('Fund', 'fund_name', 'fund_id')
+                ->sortable()
+                ->searchable(),
+            // Only for excel
+            Column::make('H.O.A', 'hoa')
+                ->hidden()
+                ->visibleInExport(true),
+
             Column::make('File number', 'file_number')
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->bodyAttribute('text-justify', 'white-space: normal !important;'),
 
-            Column::make('Amount in cents', 'amount_in_cents'),
-            Column::make('Approver id', 'approver_id'),
-            Column::make('Approved at', 'approved_at_formatted', 'approved_at')
-                ->sortable(),
-
-            Column::make('Incurred', 'incurred')
-                ->toggleable(),
-
-            Column::make('Item', 'item')
+            Column::make('Amount', 'amount_formatted', 'amount_in_cents')
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Vendor name', 'vendor_name')
+            Column::make('Created by', 'created_by_name', 'created_by')
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Gem contract number', 'gem_contract_number')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Gem non availability certificate number', 'gem_non_availability_certificate_number')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Not gem remarks', 'not_gem_remarks')
-                ->sortable()
-                ->searchable(),
-
-            Column::make('Created by', 'created_by'),
             Column::make('Created at', 'created_at_formatted', 'created_at')
                 ->sortable(),
+            
+            // Columns only for excel
+            Column::make('Approver', 'approver_name', 'approver_id')
+                ->hidden()
+                ->visibleInExport(true),
+            
+            Column::make('Approved at', 'approved_at_formatted', 'approved_at')
+                ->hidden()
+                ->visibleInExport(true),
 
+            Column::make('Incurred', 'incurred_formatted', 'incurred')
+                ->hidden()
+                ->visibleInExport(true),
+
+            Column::make('Item', 'item')
+                ->hidden()
+                ->visibleInExport(true),
+
+            Column::make('Vendor name', 'vendor_name')
+                ->hidden()
+                ->visibleInExport(true),
+
+            Column::make('GEM contract number', 'gem_contract_number')
+                ->hidden()
+                ->visibleInExport(true),
+
+            Column::make('GEM non-availability certificate number', 'gem_non_availability_certificate_number')
+                ->hidden()
+                ->visibleInExport(true),
+
+            Column::make('Not GEM remarks', 'not_gem_remarks')
+                ->hidden()
+                ->visibleInExport(true),
+
+            Column::make('Is deficit', 'is_deficit_formatted', 'is_deficit')
+                ->hidden()
+                ->visibleInExport(true),
         ];
     }
 
@@ -179,14 +244,6 @@ final class TransactionTable extends PowerGridComponent
     public function filters(): array
     {
         return [
-            Filter::inputText('file_number')->operators(['contains']),
-            Filter::datetimepicker('approved_at'),
-            Filter::boolean('incurred'),
-            Filter::inputText('item')->operators(['contains']),
-            Filter::inputText('vendor_name')->operators(['contains']),
-            Filter::inputText('gem_contract_number')->operators(['contains']),
-            Filter::inputText('gem_non_availability_certificate_number')->operators(['contains']),
-            Filter::inputText('not_gem_remarks')->operators(['contains']),
             Filter::datetimepicker('created_at'),
         ];
     }

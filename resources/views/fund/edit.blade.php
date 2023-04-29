@@ -13,19 +13,32 @@
                 <form action="{{ route('fund.update', $fund) }}" method="post">
                     @csrf
                     @method('PUT')
-                    <div class="grid grid-cols-1 md:w-1/2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <x-label for="name" :value="__('Name')" />
                             <x-input id="name" class="block mt-1 w-full" type="text" required name="name"
                                 value="{{ $fund->name }}" />
                         </div>
-                        <div>
+                        <div class="md:flex md:justify-end">
+                            <div>
+                                @php
+                                    $currentFyBalance = $fund->getFyBalance();
+                                @endphp
+                                <p class="text-sm text-gray-500 py-1">
+                                    Current FY balance: ₹{{ $currentFyBalance }}
+                                    @if ($currentFyBalance < 0)
+                                        <span class="text-red-600">[Deficit]</span>
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-start-1">
                             <x-label for="head_of_account" :value="__('Head of Account')" />
                             <x-input id="head_of_account" class="block mt-1 w-full" type="text" required
                                 name="head_of_account" value="{{ $fund->head_of_account }}" />
                         </div>
 
-                        <div>
+                        <div class="col-start-1">
                             <x-label for="description" :value="__('Description')" />
                             <x-textarea id="description" class="block mt-1 w-full" name="description" required
                                 rows="4">{{ $fund->description }}</x-textarea>

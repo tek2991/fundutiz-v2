@@ -49,6 +49,7 @@
                         <select name="fund" id="fund" wire:model="fundId"
                             class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                             required>
+                            <option value="">Select a fund</option>
                             @foreach ($funds as $fund)
                                 <option value="{{ $fund->id }}">{{ $fund->name . ' - ' . $fund->head_of_account }}
                                 </option>
@@ -58,7 +59,7 @@
                     {{-- Amount --}}
                     <div>
                         <x-label for="amount" :value="__('Amount')" />
-                        <x-input id="amount" class="block mt-1 w-full" type="number" name="amount"
+                        <x-input id="amount" class="block mt-1 w-full" type="number" name="amount" disabled="{{ !$fundId }}"
                             wire:model="amount" required />
                     </div>
                     {{-- Fund Statistics --}}
@@ -84,22 +85,23 @@
                         <x-input id="approved_at" class="block mt-1 w-full" type="date" name="approved_at"
                             wire:model="approved_at" required />
                     </div>
+                    {{-- Approver ID --}}
+                    <div class="">
+                        <x-label for="approver_id" :value="__('Approver')" />
+                        <select name="approver_id" id="approver_id" wire:model="approverId"
+                            class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                            required>
+                            <option value="">Select an approver</option>
+                            @foreach ($approvers as $approver)
+                                <option value="{{ $approver->id }}">{{ $approver->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     @if ($showDebitFields)
                         <div class="md:col-span-3">
                             <h3 class="text-lg mt-8">
                                 Details of the expense.
                             </h3>
-                        </div>
-                        {{-- Approver ID --}}
-                        <div class="md:col-start-1">
-                            <x-label for="approver_id" :value="__('Approver')" />
-                            <select name="approver_id" id="approver_id" wire:model="approverId"
-                                class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                required>
-                                @foreach ($approvers as $approver)
-                                    <option value="{{ $approver->id }}">{{ $approver->name }}</option>
-                                @endforeach
-                            </select>
                         </div>
                         {{-- Incurred --}}
                         <div>

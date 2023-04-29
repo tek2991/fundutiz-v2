@@ -22,9 +22,9 @@ class Fund extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    public function getCreaditTransactions()
+    public function getCreditTransactions()
     {
-        $creadit_type_id = TransactionType::where('name', 'Creadit')->first()->id;
+        $creadit_type_id = TransactionType::where('name', 'Credit')->first()->id;
         return $this->transactions()->where('transaction_type_id', $creadit_type_id);
     }
 
@@ -37,8 +37,8 @@ class Fund extends Model
     public function getFyBalance()
     {
         $current_fy_id = FinancialYear::where('is_active', true)->first()->id;
-        $debit_transactions = $this->getDebitTransactions()->where('financial_year_id', $current_fy_id)->sum('amount_in_cents');
-        $creadit_transactions = $this->getCreaditTransactions()->where('financial_year_id', $current_fy_id)->sum('amount_in_cents');
-        return $creadit_transactions - $debit_transactions;
+        $debit_transactions = $this->getDebitTransactions()->where('financial_year_id', $current_fy_id)->sum('amount_in_cents')/100;
+        $credit_transactions = $this->getCreditTransactions()->where('financial_year_id', $current_fy_id)->sum('amount_in_cents')/100;
+        return $credit_transactions - $debit_transactions;
     }
 }

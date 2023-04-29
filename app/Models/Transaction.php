@@ -13,7 +13,7 @@ class Transaction extends Model
         'office_id',
         'fund_id',
         'file_number',
-        'amount_in_cents',
+        'amount',
         'approver_id',
         'approved_at',
         'incurred',
@@ -108,6 +108,6 @@ class Transaction extends Model
      */
     public function createdBy()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
