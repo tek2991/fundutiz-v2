@@ -47,13 +47,10 @@
                                 {{ __('Approvers') }}
                             </x-nav-dropdown-item>
                         </x-nav-dropdown-wrapper>
-                        {{-- <x-nav-link href="{{ route('allTransactions') }}" :active="request()->routeIs('allTransactions')">
-                            {{ __('All Transactions') }}
-                        </x-nav-link> --}}
                         <x-nav-link href="{{ route('transaction.index') }}" :active="request()->routeIs('transaction.*')">
-                            {{ __('Office Transactions') }}
+                            {{ __('Transactions') }}
                         </x-nav-link>
-                        @else
+                    @else
                     @endhasrole
                 </div>
             </div>

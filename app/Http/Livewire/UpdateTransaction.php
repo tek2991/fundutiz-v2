@@ -9,8 +9,11 @@ use App\Models\FinancialYear;
 use App\Models\TransactionType;
 use Illuminate\Validation\Rule;
 
-class CreateTransaction extends Component
+class UpdateTransaction extends Component
 {
+    // Transaction
+    public $transaction;
+
     // Variables
     public $transactionTypes;
     public $activeFinancialYear;
@@ -24,16 +27,16 @@ class CreateTransaction extends Component
 
     // Dynamic Fund Variables
     public $currentBalance;
-    public $balanceAfterTransaction;
+    public $balanceAfterUpdate;
 
     // Show debit fields
-    public $showDebitFields = true;
+    public $showDebitFields;
 
     // Form Data
-    public $transactionTypeId; // Default: Debit
-    public $financialYearId; // Current Financial Year
-    public $officeId; // Current Office
-    public $createdBy; // Current User
+    public $transactionTypeId;
+    public $financialYearId;
+    public $officeId;
+    public $createdBy;
     public $fundId;
     public $amount;
     public $fileNumber;
@@ -45,12 +48,12 @@ class CreateTransaction extends Component
     public $gemContractNumber; // Required for Debit
     public $gemNonAvailabilityCertificateNumber; // Optional for Debit if empty gemContractNumber
     public $notGemRemarks; // Required for Debit if empty gemContractNumber and gemNonAvailabilityCertificateNumber
-    public $confirmDeficitTransaction = false; // Required for Debit if balanceAfterTransaction < 0
+    public $confirmDeficitTransaction = false; // Required for Debit if balanceAfterUpdate < 0
     
     // Confirm transaction
     public $confirmTransaction = false; // Required to submit the form
 
-    public function mount()
+    public function mount($transaction)
     {
         // Get the variables
         $this->transactionTypes = TransactionType::all();
@@ -62,57 +65,74 @@ class CreateTransaction extends Component
         // Set the transaction type ids
         $this->debitTypeId = $this->transactionTypes->where('name', 'Debit')->first()->id;
         $this->creditTypeId = $this->transactionTypes->where('name', 'Credit')->first()->id;
+        
+        // set showDebitFields
+        $this->showDebitFields = $transaction->transaction_type_id == $this->debitTypeId;
 
-        // Set the form data for the current financial year, current user and office
-        $this->financialYearId = $this->activeFinancialYear->id;
-        $this->officeId = $this->currentOffice->id;
-        $this->createdBy = auth()->user()->id;
+        // Set the form data from the transaction
+        $this->transactionTypeId = $this->transaction->transaction_type_id;
+        $this->financialYearId = $this->transaction->financial_year_id;
+        $this->officeId = $this->transaction->office_id;
+        $this->createdBy = $this->transaction->created_by;
 
-        // Set the default transaction type
-        $this->transactionTypeId = $this->debitTypeId;
+        $this->fundId = $this->transaction->fund_id;
+        $this->amount = $this->transaction->amount;
+        $this->fileNumber = $this->transaction->file_number;
+        $this->approved_at = $this->transaction->approved_at->format('Y-m-d');
+        $this->approverId = $this->transaction->approver_id;
+
+        $this->incurred = $this->transaction->incurred;
+        $this->item = $this->transaction->item;
+        $this->vendorName = $this->transaction->vendor_name;
+        $this->gemContractNumber = $this->transaction->gem_contract_number;
+        $this->gemNonAvailabilityCertificateNumber = $this->transaction->gem_non_availability_certificate_number;
+        $this->notGemRemarks = $this->transaction->not_gem_remarks;
+
+        // Set the dynamic fund variables
+        $this->setCurrentBalance();
+        $this->calcBalanceAfterUpdate();
     }
 
     public function setCurrentBalance()
     {
-        $this->currentBalance = $this->funds->find($this->fundId)->getFyBalance();
+        $this->currentBalance = $this->funds->find($this->fundId)->getFyBalance($this->financialYearId);
     }
 
-    public function calcBalanceAfterTransaction()
+    public function calcBalanceAfterUpdate()
     {
+        $recorded_amount = $this->transaction->amount == null ? 0 : $this->transaction->amount;
         $current_amount = $this->amount == null ? 0 : $this->amount;
+        $diff_amount = $current_amount - $recorded_amount;
         if($this->transactionTypeId == $this->debitTypeId)
         {
-            $this->balanceAfterTransaction = $this->currentBalance - $current_amount;
+            $this->balanceAfterUpdate = $this->currentBalance - $diff_amount;
         }
         else
         {
-            $this->balanceAfterTransaction = $this->currentBalance + $current_amount;
+            $this->balanceAfterUpdate = $this->currentBalance + $diff_amount;
         }
     }
 
     public function updatedFundId($value)
     {
         $this->setCurrentBalance();
-        $this->calcBalanceAfterTransaction();
+        $this->calcBalanceAfterUpdate();
     }
 
     public function updatedTransactionTypeId($value)
     {
         $this->showDebitFields = $this->transactionTypeId == $this->debitTypeId;
-        $this->calcBalanceAfterTransaction();
+        $this->calcBalanceAfterUpdate();
     }
 
     public function updatedAmount($value)
     {
-        $this->calcBalanceAfterTransaction();
+        $this->calcBalanceAfterUpdate();
     }
 
     public function rules(){
         return [
             'transactionTypeId' => 'required|exists:transaction_types,id',
-            'financialYearId' => 'required|exists:financial_years,id',
-            'officeId' => 'required|exists:offices,id',
-            'createdBy' => 'required|exists:users,id',
             'fundId' => 'required|exists:funds,id',
             'amount' => 'required|numeric|min:1',
             'fileNumber' => 'required|string',
@@ -138,7 +158,7 @@ class CreateTransaction extends Component
                     return $this->transactionTypeId == $this->debitTypeId && empty($this->gemContractNumber) && empty($this->gemNonAvailabilityCertificateNumber);
                 }),
             ],
-            'confirmDeficitTransaction' => 'nullable|required_if:balanceAfterTransaction,<,0|boolean',
+            'confirmDeficitTransaction' => 'nullable|required_if:balanceAfterUpdate,<,0|boolean',
             'confirmTransaction' => 'required|boolean',
         ];
     }
@@ -147,12 +167,9 @@ class CreateTransaction extends Component
     {
         $this->validate();
 
-        // Create the transaction
-        $transaction = $this->currentOffice->transactions()->create([
+        // Update the transaction. Financial year, office and created by are not updated
+        $transaction = $this->transaction->update([
             'transaction_type_id' => $this->transactionTypeId,
-            'financial_year_id' => $this->financialYearId,
-            'office_id' => $this->officeId,
-            'created_by' => $this->createdBy,
             'fund_id' => $this->fundId,
             'amount' => $this->amount,
             'file_number' => $this->fileNumber,
@@ -168,7 +185,7 @@ class CreateTransaction extends Component
         ]);
 
         // Flash success message
-        session()->flash('flash.banner', 'Transaction created successfully.');
+        session()->flash('flash.banner', 'Transaction updated successfully.');
 
         // Redirect to the transaction show page
         return redirect()->route('transaction.index');
@@ -176,6 +193,6 @@ class CreateTransaction extends Component
 
     public function render()
     {
-        return view('livewire.create-transaction');
+        return view('livewire.update-transaction');
     }
 }

@@ -50,7 +50,7 @@ final class TransactionTable extends PowerGridComponent
         return [
             Exportable::make('export')
                 ->striped()
-                ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
+                ->type(Exportable::TYPE_XLS),
             Header::make()->showSearchInput(),
             Footer::make()
                 ->showPerPage()
@@ -76,8 +76,14 @@ final class TransactionTable extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Transaction::query()
-            ->with(['transactionType', 'financialYear', 'office', 'fund', 'approver', 'createdBy']);
+        $userIsAdmin = auth()->user()->hasRole('administrator');
+        $query =  Transaction::query();
+
+        if (!$userIsAdmin) {
+            $query->where('office_id', auth()->user()->office_id);
+        }
+        
+        return     $query->with(['transactionType', 'financialYear', 'office', 'fund', 'approver', 'createdBy']);
     }
 
     /*
@@ -175,7 +181,8 @@ final class TransactionTable extends PowerGridComponent
 
             Column::make('Office', 'office_name', 'office_id')
                 ->sortable()
-                ->searchable(),
+                ->searchable()
+                ->hidden($isHidden =  auth()->user()->hasRole('administrator') ? false : false),
 
             Column::make('Fund', 'fund_name', 'fund_id')
                 ->sortable()
@@ -288,25 +295,17 @@ final class TransactionTable extends PowerGridComponent
      * @return array<int, Button>
      */
 
-    /*
+
     public function actions(): array
     {
-       return [
-           Button::make('edit', 'Edit')
-               ->class('bg-indigo-500 cursor-pointer text-white px-3 py-2.5 m-1 rounded text-sm')
-               ->route('transaction.edit', function(\App\Models\Transaction $model) {
-                    return $model->id;
-               }),
-
-           Button::make('destroy', 'Delete')
-               ->class('bg-red-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-               ->route('transaction.destroy', function(\App\Models\Transaction $model) {
-                    return $model->id;
-               })
-               ->method('delete')
+        return [
+            Button::make('edit', 'Edit')
+                ->class('bg-indigo-500 cursor-pointer text-white px-2.5 py-1 m-1 rounded text-sm')
+                ->route('transaction.edit', ['transaction' => 'id'])
+                ->target(''),
         ];
     }
-    */
+
 
     /*
     |--------------------------------------------------------------------------
@@ -322,16 +321,18 @@ final class TransactionTable extends PowerGridComponent
      * @return array<int, RuleActions>
      */
 
-    /*
+
     public function actionRules(): array
     {
-       return [
+        return [
 
-           //Hide button edit for ID 1
+            //Hide button edit for ID 1
             Rule::button('edit')
-                ->when(fn($transaction) => $transaction->id === 1)
+                ->when(
+                    fn ($transaction) =>
+                    auth()->user()->cannot('update', $transaction)
+                )
                 ->hide(),
         ];
     }
-    */
 }

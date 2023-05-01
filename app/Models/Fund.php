@@ -34,11 +34,13 @@ class Fund extends Model
         return $this->transactions()->where('transaction_type_id', $debit_type_id);
     }
 
-    public function getFyBalance()
+    public function getFyBalance($fy_id = null)
     {
-        $current_fy_id = FinancialYear::where('is_active', true)->first()->id;
-        $debit_transactions = $this->getDebitTransactions()->where('financial_year_id', $current_fy_id)->sum('amount_in_cents')/100;
-        $credit_transactions = $this->getCreditTransactions()->where('financial_year_id', $current_fy_id)->sum('amount_in_cents')/100;
+        if ($fy_id == null) {
+            $fy_id = FinancialYear::where('is_active', true)->first()->id;
+        }
+        $debit_transactions = $this->getDebitTransactions()->where('financial_year_id', $fy_id)->sum('amount_in_cents')/100;
+        $credit_transactions = $this->getCreditTransactions()->where('financial_year_id', $fy_id)->sum('amount_in_cents')/100;
         return $credit_transactions - $debit_transactions;
     }
 }

@@ -7,11 +7,6 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-    public function allTransactions()
-    {
-        $this->authorize('viewAny', Transaction::class);
-        return view('transaction.allTransactions');
-    }
     /**
      * Display a listing of the resource.
      */
@@ -51,7 +46,8 @@ class TransactionController extends Controller
      */
     public function edit(Transaction $transaction)
     {
-        //
+        $this->authorize('update', $transaction);
+        return view('transaction.edit', compact('transaction'));
     }
 
     /**

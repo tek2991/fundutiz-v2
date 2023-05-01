@@ -1,9 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Transactions') }}
-            </h2>
+            <div>
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    {{ __('Transactions') }}
+                </h2>
+                @if (auth()->user()->hasRole('administrator'))
+                    <p class="text-gray-500">Manage all transactions</p>
+                @else
+                    <p class="text-gray-500">Manage your transactions. [{{ auth()->user()->office->name }}]</p>
+                @endif
+            </div>
             <x-button-link href="{{ route('transaction.create') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor" stroke-width="2">

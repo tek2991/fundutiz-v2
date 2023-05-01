@@ -66,8 +66,7 @@ Route::middleware([
     Route::resource('approver', ApproverController::class)->only([
         'index', 'create', 'store', 'edit', 'update'
     ]);
-
-    Route::get('all-transactions', [TransactionController::class, 'allTransactions'])->name('allTransactions');
+    
     Route::resource('transaction', TransactionController::class)->only([
         'index', 'create', 'store', 'edit', 'update'
     ]);
