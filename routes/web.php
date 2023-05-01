@@ -21,7 +21,7 @@ use App\Http\Controllers\FinancialYearController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('login');
 });
 
 Route::middleware([
@@ -66,7 +66,7 @@ Route::middleware([
     Route::resource('approver', ApproverController::class)->only([
         'index', 'create', 'store', 'edit', 'update'
     ]);
-    
+
     Route::resource('transaction', TransactionController::class)->only([
         'index', 'create', 'store', 'edit', 'update'
     ]);
