@@ -225,22 +225,27 @@ final class TransactionTable extends PowerGridComponent
 
             Column::make('Item', 'item')
                 ->hidden()
+                ->searchable()
                 ->visibleInExport(true),
 
             Column::make('Vendor name', 'vendor_name')
                 ->hidden()
+                ->searchable()
                 ->visibleInExport(true),
 
             Column::make('GEM contract number', 'gem_contract_number')
                 ->hidden()
+                ->searchable()
                 ->visibleInExport(true),
 
             Column::make('GEM non-availability certificate number', 'gem_non_availability_certificate_number')
                 ->hidden()
+                ->searchable()
                 ->visibleInExport(true),
 
             Column::make('Not GEM remarks', 'not_gem_remarks')
                 ->hidden()
+                ->searchable()
                 ->visibleInExport(true),
 
             Column::make('Is deficit', 'is_deficit_formatted', 'is_deficit')
