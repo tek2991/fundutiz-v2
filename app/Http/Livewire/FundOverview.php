@@ -35,11 +35,20 @@ class FundOverview extends Component
         $this->prepareFundArray();
     }
 
-    public function updated($propertyName)
+    public function updatedOfficeId()
     {
-        if ($propertyName == 'fy_id' || $propertyName == 'office_id') {
-            $this->prepareFundArray();
+        if ($this->office_id == null) {
+            $this->funds = Auth::user()->hasRole('administrator') ? Fund::all() : Auth::user()->office->funds;
+        } else {
+            $this->funds = Office::find($this->office_id)->funds;
         }
+
+        $this->prepareFundArray();
+    }
+
+    public function updatedFyId()
+    {
+        $this->prepareFundArray();
     }
 
     public function prepareFundArray()
@@ -51,18 +60,11 @@ class FundOverview extends Component
             $fy_ids = [$this->fy_id];
         }
 
-        $office_ids = [];
-        if ($this->office_id == null) {
-            $office_ids = Auth::user()->hasRole('administrator') ? Office::pluck('id') : [Auth::user()->office->id];
-        } else {
-            $office_ids = [$this->office_id];
-        }
-
         $fundArray = [];
 
         foreach ($this->funds as $fund) {
-            $sum_of_debit_transactions = $fund->getDebitTransactions()->whereIn('financial_year_id', $fy_ids)->whereIn('office_id', $office_ids)->sum('amount_in_cents') / 100;
-            $sum_of_credit_transactions = $fund->getCreditTransactions()->whereIn('financial_year_id', $fy_ids)->whereIn('office_id', $office_ids)->sum('amount_in_cents') / 100;
+            $sum_of_debit_transactions = $fund->getDebitTransactions()->whereIn('financial_year_id', $fy_ids)->sum('amount_in_cents') / 100;
+            $sum_of_credit_transactions = $fund->getCreditTransactions()->whereIn('financial_year_id', $fy_ids)->sum('amount_in_cents') / 100;
             $sum_of_credit_transactions = $sum_of_credit_transactions == 0 ? 1 : $sum_of_credit_transactions;
             $percentage = round(($sum_of_debit_transactions / $sum_of_credit_transactions) * 100, 2);
             $percentage = $percentage > 100 ? 100 : $percentage;
