@@ -29,10 +29,17 @@ class FundOverview extends Component
 
         // If user is administrator, show all offices
         // Else, show only the user's office
-        $this->offices = Auth::user()->hasRole('administrator') ? Office::all() : [Auth::user()->office];
+        $this->offices = Auth::user()->hasRole('administrator') ? Office::all() : Office::whereIn('id', [Auth::user()->office->id])->get();
 
         // Prepare data for chart
         $this->prepareFundArray();
+    }
+
+    public function updated($propertyName)
+    {
+        if ($propertyName == 'fy_id' || $propertyName == 'office_id') {
+            $this->prepareFundArray();
+        }
     }
 
     public function prepareFundArray()

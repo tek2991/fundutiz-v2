@@ -34,6 +34,8 @@ class RoleSeeder extends Seeder
             } else if ($role->name == 'user') {
                 // For users by default only read access
                 $role->syncPermissions(\App\Models\Permission::where('name', 'LIKE', 'view%')->get());
+                // And permissions related to transactions
+                $role->syncPermissions(\App\Models\Permission::where('name', 'LIKE', 'transaction%')->get());
             }
         }
 
