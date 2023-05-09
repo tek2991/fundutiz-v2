@@ -58,6 +58,9 @@ class UserController extends Controller
         
         $user->roles()->attach($validated['role_ids']);
 
+        // Send verification email to the user
+        $user->sendEmailVerificationNotification();
+
         return redirect()->route('user.index')->banner('User created successfully');
     }
 
