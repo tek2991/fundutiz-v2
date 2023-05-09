@@ -63,6 +63,7 @@ class FundOverview extends Component
         foreach ($this->funds as $fund) {
             $sum_of_debit_transactions = $fund->getDebitTransactions()->whereIn('financial_year_id', $fy_ids)->whereIn('office_id', $office_ids)->sum('amount_in_cents') / 100;
             $sum_of_credit_transactions = $fund->getCreditTransactions()->whereIn('financial_year_id', $fy_ids)->whereIn('office_id', $office_ids)->sum('amount_in_cents') / 100;
+            $sum_of_credit_transactions = $sum_of_credit_transactions == 0 ? 1 : $sum_of_credit_transactions;
             $percentage = round(($sum_of_debit_transactions / $sum_of_credit_transactions) * 100, 2);
             $percentage = $percentage > 100 ? 100 : $percentage;
             $color = "blue-500";
