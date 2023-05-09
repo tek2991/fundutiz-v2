@@ -187,6 +187,46 @@
             <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @hasrole('administrator')
+                {{-- User Management --}}
+                <x-nav-dropdown-button-responsive data-dropdown-toggle="user_management_dropdownNavbar_responsive">
+                    {{ __('Admin Menu') }}
+                </x-nav-dropdown-button-responsive>
+                <style>
+                    #user_management_dropdownNavbar_responsive {
+                        transform: translate3d(10px, 166px, 0px) !important;
+                    }
+                </style>
+                <x-nav-dropdown-wrapper id="user_management_dropdownNavbar_responsive">
+                    {{-- Users --}}
+                    <x-nav-dropdown-item :href="route('user.index')" :active="request()->routeIs('user.*')">
+                        {{ __('Users') }}
+                    </x-nav-dropdown-item>
+                    {{-- Roles --}}
+                    <x-nav-dropdown-item :href="route('role.index')" :active="request()->routeIs('role.*')">
+                        {{ __('Roles') }}
+                    </x-nav-dropdown-item>
+                    {{-- Financial Years --}}
+                    <x-nav-dropdown-item :href="route('financialYear.index')" :active="request()->routeIs('financialYear.*')">
+                        {{ __('Financial Years') }}
+                    </x-nav-dropdown-item>
+                    {{-- Offices --}}
+                    <x-nav-dropdown-item :href="route('office.index')" :active="request()->routeIs('office.*')">
+                        {{ __('Offices') }}
+                    </x-nav-dropdown-item>
+                    {{-- Funds --}}
+                    <x-nav-dropdown-item :href="route('fund.index')" :active="request()->routeIs('fund.*')">
+                        {{ __('Funds') }}
+                    </x-nav-dropdown-item>
+                    {{-- Approvers --}}
+                    <x-nav-dropdown-item :href="route('approver.index')" :active="request()->routeIs('approver.*')">
+                        {{ __('Approvers') }}
+                    </x-nav-dropdown-item>
+                </x-nav-dropdown-wrapper>
+            @endhasrole
+            <x-responsive-nav-link href="{{ route('transaction.index') }}" :active="request()->routeIs('transaction.*')">
+                {{ __('Transactions') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
