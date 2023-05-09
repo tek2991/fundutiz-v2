@@ -24,7 +24,7 @@ class FundOverview extends Component
 
     public function mount()
     {
-        $this->funds = Fund::all();
+        $this->funds = Auth::user()->hasRole('administrator') ? Fund::all() : Auth::user()->office->funds;
         $this->financialYears = FinancialYear::all();
 
         // If user is administrator, show all offices
