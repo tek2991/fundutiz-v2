@@ -134,7 +134,7 @@ class UpdateTransaction extends Component
         return [
             'transactionTypeId' => 'required|exists:transaction_types,id',
             'fundId' => 'required|exists:funds,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric',
             'fileNumber' => 'required|string',
             'approved_at' => 'required|date',
             'approverId' => 'required|exists:approvers,id',
