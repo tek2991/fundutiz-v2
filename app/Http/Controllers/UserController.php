@@ -149,4 +149,31 @@ class UserController extends Controller
         $user->roles()->attach($role);
         return redirect()->route('user.edit', $user)->banner('Role attached');
     }
+
+    public function detatchOfficeAsManager(User $user, Office $office)
+    {
+        // Do not allow users who are not admins to detatch roles
+        if (!auth()->user()->hasRole('administrator')) {
+            return redirect()->back()->dangerBanner('You do not have permission to do that.');
+        }
+
+        $user->managerOfOffices()->detach($office);
+        return redirect()->route('user.edit', $user)->banner('Office detached as manager');
+    }
+
+    public function attachOfficeAsManager(Request $request, User $user)
+    {
+        // Do not allow users who are not admins to attach roles
+        if (!auth()->user()->hasRole('administrator')) {
+            return redirect()->back()->dangerBanner('You do not have permission to do that.');
+        }
+        $office = Office::find($request->office_id);
+
+        // Do not allow attaching the same office twice
+        if ($user->managerOfOffices->contains($office)) {
+            return redirect()->back()->dangerBanner('User already manager this office');
+        }
+        $user->managerOfOffices()->attach($office);
+        return redirect()->route('user.edit', $user)->banner('Office attached as manager');
+    }
 }

@@ -39,6 +39,8 @@ Route::middleware([
     ]);
     Route::delete('user/{user}/detatch-role/{role}', [UserController::class, 'detatchRole'])->name('user.detatchRole');
     Route::put('user/{user}/attach-role', [UserController::class, 'attachRole'])->name('user.attachRole');
+    Route::delete('user/{user}/detatch-office-as-manager/{office}', [UserController::class, 'detatchOfficeAsManager'])->name('user.detatchOfficeAsManager');
+    Route::put('user/{user}/attach-office-as-manager', [UserController::class, 'attachOfficeAsManager'])->name('user.attachOfficeAsManager');
     // Role Routes
     Route::resource('role', RoleController::class)->only([
         'index', 'show', 'create', 'store', 'edit', 'update'

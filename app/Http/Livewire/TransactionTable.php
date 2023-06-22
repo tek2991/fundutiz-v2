@@ -80,10 +80,16 @@ final class TransactionTable extends PowerGridComponent
     public function datasource(): Builder
     {
         $userIsAdmin = auth()->user()->hasRole('administrator');
+        $userIsManager = auth()->user()->hasRole('manager');
         $query =  Transaction::query();
 
-        if (!$userIsAdmin) {
+        if (!$userIsAdmin && !$userIsManager) {
             $query->where('office_id', auth()->user()->office_id);
+        }
+
+        if($userIsManager) {
+            $offices = auth()->user()->managerOfOffices;
+            $query->whereIn('office_id', $offices->pluck('id'));
         }
 
         return     $query->with(['transactionType', 'financialYear', 'office', 'fund', 'approver', 'createdBy']);
@@ -185,7 +191,7 @@ final class TransactionTable extends PowerGridComponent
             Column::make('Office', 'office_name', 'office_id')
                 ->sortable()
                 ->searchable()
-                ->hidden($isHidden =  auth()->user()->hasRole('administrator') ? false : false),
+                ->hidden($isHidden = auth()->user()->hasAnyRole(['administrator', 'manager'])!= True),
 
             Column::make('Fund', 'fund_name', 'fund_id')
                 ->sortable()

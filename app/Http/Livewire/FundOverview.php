@@ -22,23 +22,66 @@ class FundOverview extends Component
     // Data for chart
     public $fundArray;
 
+    // Load the user
+    public $user;
+
     public function mount()
     {
-        $this->funds = Auth::user()->hasRole('administrator') ? Fund::all() : Auth::user()->office->funds;
+        $this->user = Auth::user();
         $this->financialYears = FinancialYear::all();
 
-        // If user is administrator, show all offices
-        // Else, show only the user's office
-        $this->offices = Auth::user()->hasRole('administrator') ? Office::all() : Office::whereIn('id', [Auth::user()->office->id])->get();
+        $this->loadFunds();
+        $this->loadOffices();
 
         // Prepare data for chart
         $this->prepareFundArray();
     }
 
+    public function loadFunds()
+    {
+        // If user is administrator, show all funds
+        // If user is manager, show only his/her funds
+        // If user is user, show only his/her fund
+
+        $this->funds = $this->user->office->funds;
+
+        if ($this->user->hasRole('manager')) {
+            $offices = $this->user->managerOfOffices;
+            $this_office = null;
+            $fund_ids = [];
+            foreach ($offices as $office) {
+                $fund_ids  = array_merge($fund_ids, $office->funds->pluck('id')->toArray());
+                $this_office = $office;
+            }
+            dd($fund_ids);
+            dd($this_office);
+            $this->funds = Fund::whereIn('id', $fund_ids)->get();
+        }
+
+        if ($this->user->hasRole('administrator')) {
+            $this->funds = Fund::all();
+        }
+    }
+
+    public function loadOffices()
+    {
+        // If user is administrator, show all offices
+        // If user is manager, show only his/her offices
+        // If user is user, show only his/her office
+
+        if ($this->user->hasRole('administrator')) {
+            $this->offices = Office::all();
+        } else if ($this->user->hasRole('manager')) {
+            $this->offices = $this->user->managerOfOffices;
+        } else {
+            $this->offices = [$this->user->office];
+        }
+    }
+
     public function updatedOfficeId()
     {
         if ($this->office_id == null) {
-            $this->funds = Auth::user()->hasRole('administrator') ? Fund::all() : Auth::user()->office->funds;
+            $this->loadFunds();
         } else {
             $this->funds = Office::find($this->office_id)->funds;
         }

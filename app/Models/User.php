@@ -70,7 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function managerOfOffices()
     {
-        return $this->hasMany(Office::class, 'manager_id');
+        return $this->belongsToMany(Office::class, 'office_managers');
     }
 
     public function transactions()

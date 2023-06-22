@@ -3,7 +3,7 @@
         Fund Overview
     </h1>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        @role('administrator')
+        @if ($user->hasRole('administrator') || $user->hasRole('manager'))
             {{-- Office id --}}
             <div class="">
                 <label class="block font-medium text-sm text-gray-700">
@@ -18,7 +18,7 @@
                     @endforeach
                 </select>
             </div>
-        @endrole
+        @endif
         {{-- Financial Year Id --}}
         <div class="">
             <label class="block font-medium text-sm text-gray-700">

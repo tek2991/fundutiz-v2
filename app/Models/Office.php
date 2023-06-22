@@ -8,12 +8,12 @@ class Office extends Model
 {
     protected $fillable = [
         'name',
-        'manager_id',
+        // 'manager_id',
     ];
 
-    public function manager()
+    public function managers()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class, 'office_managers');
     }
 
     public function users()

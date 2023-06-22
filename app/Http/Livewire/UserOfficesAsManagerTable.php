@@ -10,10 +10,12 @@ use PowerComponents\LivewirePowerGrid\Traits\{ActionButton, WithExport};
 use PowerComponents\LivewirePowerGrid\Filters\Filter;
 use PowerComponents\LivewirePowerGrid\{Button, Column, Exportable, Footer, Header, PowerGrid, PowerGridComponent, PowerGridEloquent};
 
-final class OfficeTable extends PowerGridComponent
+final class UserOfficesAsManagerTable extends PowerGridComponent
 {
     use ActionButton;
     use WithExport;
+
+    public $user;
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +54,8 @@ final class OfficeTable extends PowerGridComponent
      */
     public function datasource(): Builder
     {
-        return Office::query();
+        $offices = $this->user->managerOfOffices;
+        return Office::query()->whereIn('id', $offices->pluck('id'));
     }
 
     /*
@@ -90,11 +93,9 @@ final class OfficeTable extends PowerGridComponent
             ->addColumn('id')
             ->addColumn('name')
 
-            /** Example of custom column using a closure **/
+           /** Example of custom column using a closure **/
             ->addColumn('name_lower', fn (Office $model) => strtolower(e($model->name)))
 
-            // ->addColumn('manager_id')
-            // ->addColumn('manager_name', fn (Office $model) => e($model->manager->name))
             ->addColumn('created_at_formatted', fn (Office $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
     }
 
@@ -107,21 +108,21 @@ final class OfficeTable extends PowerGridComponent
     |
     */
 
-    /**
-     * PowerGrid Columns.
-     *
-     * @return array<int, Column>
-     */
+     /**
+      * PowerGrid Columns.
+      *
+      * @return array<int, Column>
+      */
     public function columns(): array
     {
         return [
+            Column::make('Id', 'id'),
             Column::make('Name', 'name')
                 ->sortable()
                 ->searchable(),
 
-            // Column::make('Manager', 'manager_name'),
-            Column::make('Created at', 'created_at_formatted', 'created_at')
-                ->sortable(),
+            // Column::make('Created at', 'created_at_formatted', 'created_at')
+            //     ->sortable(),
 
         ];
     }
@@ -153,17 +154,20 @@ final class OfficeTable extends PowerGridComponent
      * @return array<int, Button>
      */
 
-
+    
     public function actions(): array
     {
         return [
-            Button::make('edit', 'Edit')
-                ->class('bg-indigo-500 cursor-pointer text-white px-2.5 py-1 m-1 rounded text-sm')
-                ->route('office.edit', ['office' => 'id'])
-                ->target(''),
+
+            Button::make('destroy', 'Remove')
+                ->class('bg-red-500 cursor-pointer text-white px-2.5 py-1.5 m-1 rounded text-sm')
+                //    ->route('user.detatchRole', ['user' => $this->user->id, 'role' => 'id'])
+                //    ->method('delete')
+                //    ->target('')
+                ->openModal('confirm-detatch-modal', ['route' => 'user.detatchOfficeAsManager', 'model_id' => $this->user->id, 'model_name' => 'User', 'detatching_model_id' => 'id', 'detatching_model_name' => 'Office', 'action' => 'detatch'])
         ];
     }
-
+    
 
     /*
     |--------------------------------------------------------------------------

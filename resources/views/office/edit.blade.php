@@ -19,16 +19,17 @@
                             <x-input id="name" class="block mt-1 w-full" type="text" required name="name"
                                 value="{{ $office->name }}" />
                         </div>
-                        <div>
-                            <x-label for="manager_id" :value="__('Manager')" />
-                            <x-input-select id="manager_id" class="block mt-1 w-full" required name="manager_id">
-                                <option value="">Select Manager</option>
-                                @foreach ($managers as $manager)
-                                    <option value="{{ $manager->id }}"
-                                        {{ $office->manager_id == $manager->id ? 'selected' : '' }}>
-                                        {{ $manager->name }}</option>
-                                @endforeach
-                            </x-input-select>
+                        <div class="col-start-1">
+                            <x-label for="office_id" :value="__('Managers:')" />
+                            <ul class="list-disc pl-6 mt-2">
+                                @if ($office->managers->count() > 0)
+                                    @foreach ($office->managers as $user)
+                                        <li class="text-sm">{{ $user->name }}</li>
+                                    @endforeach
+                                @else
+                                    <li class="text-sm">No managers assigned</li>
+                                @endif
+                            </ul>
                         </div>
                     </div>
                     <div class="flex justify-end mt-4">

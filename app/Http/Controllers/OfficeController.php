@@ -37,7 +37,12 @@ class OfficeController extends Controller
             'name' => 'required',
             'manager_id' => 'required|exists:users,id',
         ]);
-        Office::create($request->all());
+        $office = Office::create([
+            'name' => $request->name,
+        ]);
+
+        User::find($request->manager_id)->managerOfOffices()->attach($office);
+
         return redirect()->route('office.index')->banner('Office created successfully.');
     }
 
@@ -55,8 +60,8 @@ class OfficeController extends Controller
     public function edit(Office $office)
     {
         $this->authorize('update', $office);
-        $managers = User::role('manager')->get();
-        return view('office.edit', compact('office', 'managers'));
+        // $managers = User::role('manager')->get();
+        return view('office.edit', compact('office'));
     }
 
     /**
