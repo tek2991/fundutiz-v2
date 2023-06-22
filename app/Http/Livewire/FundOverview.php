@@ -47,14 +47,10 @@ class FundOverview extends Component
 
         if ($this->user->hasRole('manager')) {
             $offices = $this->user->managerOfOffices;
-            $this_office = null;
             $fund_ids = [];
             foreach ($offices as $office) {
                 $fund_ids  = array_merge($fund_ids, $office->funds->pluck('id')->toArray());
-                $this_office = $office;
             }
-            dd($fund_ids);
-            dd($this_office);
             $this->funds = Fund::whereIn('id', $fund_ids)->get();
         }
 

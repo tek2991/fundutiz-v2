@@ -94,8 +94,8 @@ final class FundOfficesTable extends PowerGridComponent
             /** Example of custom column using a closure **/
             ->addColumn('name_lower', fn (Office $model) => strtolower(e($model->name)))
 
-            ->addColumn('manager_id')
-            ->addColumn('manager_name', fn (Office $model) => $model->manager->name)
+            // ->addColumn('manager_id')
+            // ->addColumn('manager_name', fn (Office $model) => $model->manager->name)
             ->addColumn('created_at_formatted', fn (Office $model) => Carbon::parse($model->created_at)->format('d/m/Y H:i:s'));
     }
 
@@ -120,7 +120,7 @@ final class FundOfficesTable extends PowerGridComponent
                 ->sortable()
                 ->searchable(),
 
-            Column::make('Manager', 'manager_name'),
+            // Column::make('Manager', 'manager_name'),
 
         ];
     }
