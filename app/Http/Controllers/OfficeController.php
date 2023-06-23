@@ -72,7 +72,7 @@ class OfficeController extends Controller
         $this->authorize('update', $office);
         $request->validate([
             'name' => 'required',
-            'manager_id' => 'required|exists:users,id',
+            // 'manager_id' => 'required|exists:users,id',
         ]);
         $office->update($request->all());
         return redirect()->route('office.index')->banner('Office updated successfully.');
