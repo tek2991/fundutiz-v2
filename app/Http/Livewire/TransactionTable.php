@@ -87,13 +87,13 @@ final class TransactionTable extends PowerGridComponent
             $query->where('office_id', auth()->user()->office_id);
         }
 
-        if($userIsManager) {
+        if($userIsManager && !$userIsAdmin) {
             $offices = auth()->user()->managerOfOffices;
             $query->whereIn('office_id', $offices->pluck('id'));
         }
 
         if($userIsAdmin) {
-            $query->where('office_id', auth()->user()->office_id);
+            // Nothing to do
         }
 
         return     $query->with(['transactionType', 'financialYear', 'office', 'fund', 'approver', 'createdBy']);
