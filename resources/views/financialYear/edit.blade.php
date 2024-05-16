@@ -31,7 +31,7 @@
                         </div>
                         <div>
                             <x-label for="is_active" :value="__('Set as current')" />
-                            <x-checkbox id="is_active" class="block mt-1" required name="is_active" value="1"
+                            <x-checkbox id="is_active" class="block mt-1" name="is_active" value="1"
                                 checked="{{ $financialYear->is_active }}" />
                         </div>
                     </div>

@@ -37,7 +37,10 @@ class FinancialYearController extends Controller
             'end_date' => 'required|date|after:start_date',
             'is_active' => 'nullable|boolean'
         ]);
-        FinancialYear::create($request->all());
+        $fy = FinancialYear::create($request->all());
+        if($request->is_active) {
+            FinancialYear::where('id', '!=', $fy->id)->update(['is_active' => false]);
+        }
         return redirect()->route('financialYear.index')->banner('New Financial Year added');;
     }
 
@@ -70,7 +73,14 @@ class FinancialYearController extends Controller
             'end_date' => 'required|date|after:start_date',
             'is_active' => 'nullable|boolean'
         ]);
-        $financialYear->update($request->all());
+
+        $fy = $financialYear->update($request->all());
+
+        // If is_active is not set, deactivate it
+        if(!$request->is_active) {
+            $financialYear->update(['is_active' => false]);
+        } 
+
         return redirect()->route('financialYear.index')->banner('Financial Year updated');
     }
 
